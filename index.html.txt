@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday! 🎉</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #ff758c;
+            --secondary: #ff7eb3;
+            --bg-gradient: linear-gradient(135deg, #1a0b2e, #3b185f, #ff7eb3);
+            --text-light: #fff;
+            --gold: #ffd700;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-light);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Music Toggle */
+        #music-toggle {
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            background: rgba(255,255,255,0.2); border: none; border-radius: 50%;
+            width: 50px; height: 50px; color: white; font-size: 24px;
+            cursor: pointer; backdrop-filter: blur(5px);
+        }
+
+        /* Page System */
+        .page {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            animation: fadeIn 1s ease-in-out;
+            text-align: center;
+        }
+        .page.active { display: flex; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-family: 'Dancing Script', cursive; font-size: 4rem; color: var(--gold); text-shadow: 0 0 15px rgba(255,215,0,0.5); margin-bottom: 20px; }
+        h2 { font-family: 'Dancing Script', cursive; font-size: 3rem; color: var(--primary); margin-bottom: 20px; }
+        p { font-size: 1.2rem; max-width: 600px; line-height: 1.6; }
+
+        .btn {
+            margin-top: 30px; padding: 15px 40px; font-size: 1.2rem;
+            background: linear-gradient(45deg, var(--primary), var(--gold));
+            border: none; border-radius: 30px; color: white; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 117, 140, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .btn:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(255, 117, 140, 0.6); }
+
+        /* Grid Gallery */
+        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; width: 100%; max-width: 900px; margin-top: 20px; }
+        .gallery img { width: 100%; height: 250px; object-fit: cover; border-radius: 15px; border: 3px solid rgba(255,255,255,0.2); transition: transform 0.4s; }
+        .gallery img:hover { transform: scale(1.05); z-index: 10; position: relative; border-color: var(--gold); }
+
+        /* Slideshow */
+        .slideshow-container { position: relative; max-width: 600px; width: 100%; height: 400px; border-radius: 20px; overflow: hidden; box-shadow: 0 0 30px rgba(255,255,255,0.2); }
+        .slide { display: none; width: 100%; height: 100%; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
+        .slide.active-slide { display: block; animation: fadeSlide 1.5s; }
+        @keyframes fadeSlide { from { opacity: 0.4; } to { opacity: 1; } }
+
+        /* Flip Card */
+        .flip-card { background-color: transparent; width: 300px; height: 400px; perspective: 1000px; margin-top: 20px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.8s; transform-style: preserve-3d; cursor: pointer; }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .flip-card-front { background: linear-gradient(135deg, var(--primary), var(--secondary)); }
+        .flip-card-back { background: var(--gold); color: #333; transform: rotateY(180deg); }
+
+        /* Floating Bubbles */
+        .wishes-wall { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 800px; }
+        .bubble { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 20px; border-left: 4px solid var(--gold); backdrop-filter: blur(10px); animation: float 4s infinite ease-in-out alternate; }
+        @keyframes float { from { transform: translateY(0); } to { transform: translateY(-15px); } }
+
+        /* Surprise Gift */
+        .gift-box { font-size: 100px; cursor: pointer; transition: transform 0.3s; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1) rotate(5deg); } 100% { transform: scale(1); } }
+        
+        /* Typewriter */
+        .typewriter-text { font-size: 1.5rem; min-height: 100px; }
+        .cursor { display: inline-block; width: 3px; height: 1.2em; background-color: var(--gold); animation: blink 0.7s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop>
+        <source src="bg-music.mp3" type="audio/mpeg">
+    </audio>
+    <button id="music-toggle" onclick="toggleMusic()">🎵</button>
+
+    <section class="page active" id="page-1">
+        <h1>Happy Birthday! 🎉</h1>
+        <p>A very special journey awaits you today. Ready to see what's inside?</p>
+        <button class="btn" onclick="nextPage(2); fireConfetti();">Enter the Magic</button>
+    </section>
+
+    <section class="page" id="page-2">
+        <h2>Beautiful Moments</h2>
+        <div class="gallery">
+            <img src="IMG_20250209_135031_789.jpg" alt="Memory 1">
+            <img src="Screenshot_20260126_234901_Instagram.jpg" alt="Memory 2">
+            <img src="WhatsApp Image 2026-01-18 at 6.54.53 PM.jpeg" alt="Memory 3">
+            <img src="Gemini_Generated_Image_ (1).jpg" alt="Memory 4">
+        </div>
+        <button class="btn" onclick="nextPage(3)">Next: The Timeline</button>
+    </section>
+
+    <section class="page" id="page-3">
+        <h2>Your Colorful Journey</h2>
+        <div class="bubble" style="margin-bottom: 20px;">
+            <img src="IMG-20260311-WA0036.jpg" style="width: 100%; border-radius: 10px; max-width: 300px;">
+            <p style="margin-top: 10px;">Filling life with colors and joy!</p>
+        </div>
+        <div class="bubble">
+            <img src="Gemini_Generated_Image_ (3).jpg" style="width: 100%; border-radius: 10px; max-width: 300px;">
+            <p style="margin-top: 10px;">Elegance and endless smiles.</p>
+        </div>
+        <button class="btn" onclick="nextPage(4); startTypewriter();">Next: A Special Message</button>
+    </section>
+
+    <section class="page" id="page-4">
+        <h2>For You</h2>
+        <div>
+            <span class="typewriter-text" id="typewriter"></span><span class="cursor"></span>
+        </div>
+        <button class="btn" onclick="nextPage(5); startSlideshow();">Next: Slideshow</button>
+    </section>
+
+    <section class="page" id="page-5">
+        <h2>Looking Back</h2>
+        <div class="slideshow-container">
+            <div class="slide active-slide"><img src="IMG_20250209_135031_789.jpg"></div>
+            <div class="slide"><img src="Screenshot_20260126_234901_Instagram.jpg"></div>
+            <div class="slide"><img src="WhatsApp Image 2026-01-18 at 6.54.53 PM.jpeg"></div>
+            <div class="slide"><img src="IMG-20260311-WA0037.jpg"></div>
+        </div>
+        <button class="btn" onclick="nextPage(6)">Next: Interactive Card</button>
+    </section>
+
+    <section class="page" id="page-6">
+        <h2>Tap to Open</h2>
+        <div class="flip-card" onclick="this.classList.toggle('active')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <h3 style="font-size: 2rem;">💌 Open Me</h3>
+                </div>
+                <div class="flip-card-back">
+                    <h3>You are amazing!</h3>
+                    <p style="color: #333; margin-top:10px;">May all your dreams come true this year. Keep shining bright!</p>
+                </div>
+            </div>
+        </div>
+        <button class="btn" onclick="nextPage(7)">Next: Fun Quiz</button>
+    </section>
+
+    <section class="page" id="page-7">
+        <h2>Birthday Quiz</h2>
+        <div class="bubble" id="quiz-container">
+            <h3>Who is the star of today?</h3>
+            <button class="btn" style="padding: 10px 20px; font-size: 1rem;" onclick="checkAnswer(true)">You!</button>
+            <button class="btn" style="padding: 10px 20px; font-size: 1rem;" onclick="checkAnswer(false)">Someone else</button>
+            <p id="quiz-result" style="margin-top: 15px; font-weight: bold;"></p>
+        </div>
+        <button class="btn" onclick="nextPage(8)" style="display:none;" id="quiz-next">Next: The Wishes Wall</button>
+    </section>
+
+    <section class="page" id="page-8">
+        <h2>Wall of Wishes</h2>
+        <div class="wishes-wall">
+            <div class="bubble">"Wishing you a year of endless blessings!" ✨</div>
+            <div class="bubble">"Stay as wonderful and cheerful as you are." ❤️</div>
+            <div class="bubble">"To more adventures and memories!" 🥂</div>
+        </div>
+        <button class="btn" onclick="nextPage(9)">Next: A Surprise</button>
+    </section>
+
+    <section class="page" id="page-9">
+        <h2>A Little Surprise</h2>
+        <p>Click the gift box!</p>
+        <div class="gift-box" onclick="revealSurprise(this)">🎁</div>
+        <div id="surprise-content" style="display: none; margin-top: 20px;">
+            <img src="Gemini_Generated_Image_ (1).jpg" style="width: 200px; border-radius: 20px; border: 3px solid var(--gold);">
+            <h3 style="margin-top: 15px;">Surprise! Keep smiling!</h3>
+            <button class="btn" onclick="nextPage(10); fireFireworks();">Next: The Finale</button>
+        </div>
+    </section>
+
+    <section class="page" id="page-10">
+        <h1>Happy Birthday Once Again!</h1>
+        <p>I hope this brought a smile to your face. Enjoy your special day to the absolute fullest!</p>
+        <button class="btn" onclick="nextPage(1)">Replay Experience 🔄</button>
+    </section>
+
+    <script>
+        // --- Navigation Logic ---
+        function nextPage(num) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(`page-${num}`).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        // --- Music Logic ---
+        let isPlaying = false;
+        const music = document.getElementById('bg-music');
+        function toggleMusic() {
+            if (isPlaying) { music.pause(); document.getElementById('music-toggle').innerText = "🔇"; } 
+            else { music.play().catch(e=>console.log("Audio play failed, user interaction needed.")); document.getElementById('music-toggle').innerText = "🎵"; }
+            isPlaying = !isPlaying;
+        }
+
+        // --- Confetti Logic ---
+        function fireConfetti() {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#ff7eb3', '#ffd700', '#ffffff'] });
+        }
+
+        function fireFireworks() {
+            var duration = 3 * 1000;
+            var end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ff7eb3', '#ffd700'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ff7eb3', '#ffd700'] });
+                if (Date.now() < end) { requestAnimationFrame(frame); }
+            }());
+        }
+
+        // --- Typewriter Logic ---
+        const msg = "Wishing you a birthday as beautiful, graceful, and wonderful as you are. May this year bring you all the success and happiness in the world.";
+        let i = 0;
+        let typeInterval;
+        function startTypewriter() {
+            i = 0;
+            document.getElementById('typewriter').innerHTML = "";
+            clearInterval(typeInterval);
+            typeInterval = setInterval(() => {
+                if(i < msg.length) {
+                    document.getElementById('typewriter').innerHTML += msg.charAt(i);
+                    i++;
+                } else { clearInterval(typeInterval); }
+            }, 50);
+        }
+
+        // --- Slideshow Logic ---
+        let slideIndex = 0;
+        let slideInterval;
+        function startSlideshow() {
+            clearInterval(slideInterval);
+            let slides = document.querySelectorAll('.slide');
+            slideInterval = setInterval(() => {
+                slides.forEach(s => s.classList.remove('active-slide'));
+                slideIndex = (slideIndex + 1) % slides.length;
+                slides[slideIndex].classList.add('active-slide');
+            }, 3000);
+        }
+
+        // --- Quiz Logic ---
+        function checkAnswer(isCorrect) {
+            const res = document.getElementById('quiz-result');
+            if(isCorrect) { res.innerText = "Correct! 100 points! 🎉"; res.style.color = "var(--gold)"; fireConfetti(); } 
+            else { res.innerText = "Oops! Try again! 😉"; res.style.color = "white"; }
+            document.getElementById('quiz-next').style.display = "inline-block";
+        }
+
+        // --- Surprise Logic ---
+        function revealSurprise(el) {
+            el.style.display = 'none';
+            document.getElementById('surprise-content').style.display = 'block';
+            fireConfetti();
+        }
+    </script>
+</body>
+</html>
